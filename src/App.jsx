@@ -1,5 +1,5 @@
 import React from 'react'
-import config_variable from '../config_variable/config_variable'
+import config_variable from './config_variable/config_variable'
 
 function App() {
   return (

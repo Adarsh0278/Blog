@@ -1,5 +1,4 @@
-// import config_variable from "../config_variable/config_variable";
-import config_variable from "../config_variable/config_variable";
+import config_variable from "@/config_variable/config_variable";
 import { Client, Account, ID } from "appwrite";
 
 export class AuthService {
