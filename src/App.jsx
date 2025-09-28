@@ -1,12 +1,45 @@
-import React from 'react'
-import config_variable from './config_variable/config_variable'
+import React,{useEffect,useState} from "react"
+import { useDispatch } from "react-redux"
+import { AuthService } from "./appwirte/AppWirte"
+import {login , logout} from "./store/store"
+
+
 
 function App() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold">Welcome to the Blogging App</h1>
-      <p>{config_variable.appwriteProjectId}</p>
-    </div>
+  const [loading,setLoading] = useState(true)
+  const dispatch = useDispatch()
+
+useEffect(() => {
+  AuthService.getCurrentUser()
+    .then((userData) => {
+      if (userData) {
+        dispatch(login({ userData }));
+      } else {
+        dispatch(logout());
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching current user:", error);
+      dispatch(logout());
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+}, [dispatch]);
+
+
+  // return !loading ? (
+  //   <div className="h-sceen ">
+  //     dev
+  //   </div>
+  // ):null
+  
+  return(
+  <div>
+    <h1>ok</h1>
+    ok
+    
+  </div>
   )
 }
 
