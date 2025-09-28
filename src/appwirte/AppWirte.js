@@ -1,72 +1,89 @@
-import config_variable from "../config_variable/config_variable";
-import { Client, Account, ID } from "appwrite";
+// src/appwirte/AppWriteService.js
+import config_variable from "../config_variable/config_variable.js";
+import { Client, ID, Databases, Storage, Query } from "appwrite";
 
-export class AuthService {
+export class AppWriteService {
   client = new Client();
-  account;
+  databases;
+  storage;
 
   constructor() {
     this.client
       .setEndpoint(config_variable.appwriteUrl)
       .setProject(config_variable.appwriteProjectId);
-    this.account = new Account(this.client);
+
+    this.databases = new Databases(this.client);
+    this.storage = new Storage(this.client);
   }
 
-  // ✅ Create account
-  async createAccount({ email, password }) {
-    try {
-      const userAccount = await this.account.create(
-        ID.unique(),
-        email,
-        password
-      );
-      console.log("✅ Account created successfully:", userAccount);
-      return userAccount;
-    } catch (error) {
-      console.error("❌ Error creating account:", error);
-      throw error;
-    }
+  // ================= Documents =================
+  async createDocument({ title, slug, content, featuredImage, status, userId }) {
+    return this.databases.createDocument(
+      config_variable.appwriteDatabaseId,
+      config_variable.appwriteCollectionId,
+      slug,
+      { title, content, featuredImage, status, userId }
+    );
   }
 
-  // ✅ Login
-  async login({ email, password }) {
-    try {
-      const session = await this.account.createEmailPasswordSession(
-        email,
-        password
-      );
-      console.log("✅ Login successful:", session);
-      return session;
-    } catch (error) {
-      console.error("❌ Error logging in:", error);
-      throw error;
-    }
+  async updateDocument({ slug, title, content, featuredImage, status, userId }) {
+    return this.databases.updateDocument(
+      config_variable.appwriteDatabaseId,
+      config_variable.appwriteCollectionId,
+      slug,
+      { title, content, featuredImage, status, userId }
+    );
   }
 
-  // ✅ Get current user
+  async deleteDocument({ slug }) {
+    await this.databases.deleteDocument(
+      config_variable.appwriteDatabaseId,
+      config_variable.appwriteCollectionId,
+      slug
+    );
+    return true;
+  }
+
+  async getDocument({ slug }) {
+    return this.databases.getDocument(
+      config_variable.appwriteDatabaseId,
+      config_variable.appwriteCollectionId,
+      slug
+    );
+  }
+
+  async getAllDocuments(queries = [Query.orderDesc("$createdAt")]) {
+    return this.databases.listDocuments(
+      config_variable.appwriteDatabaseId,
+      config_variable.appwriteCollectionId,
+      queries
+    );
+  }
+
+  // ================= Files =================
+  async uploadFile({ file }) {
+    return this.storage.createFile(config_variable.appwriteBucketId, ID.unique(), file);
+  }
+
+  async deleteFile({ fileId }) {
+    await this.storage.deleteFile(config_variable.appwriteBucketId, fileId);
+    return true;
+  }
+
+  async getFilePreview({ fileId }) {
+    return this.storage.getFilePreview(config_variable.appwriteBucketId, fileId);
+  }
+
+  // ================= Auth =================
   async getCurrentUser() {
     try {
-      const user = await this.account.get();
-      console.log("👤 Current user:", user);
-      return user;
+      const account = new (await import("appwrite")).Account(this.client);
+      return account.get();
     } catch (error) {
-      console.error("❌ Error fetching current user:", error);
-      throw error;
-    }
-  }
-
-  // ✅ Logout
-  async logout() {
-    try {
-      await this.account.deleteSession("current");
-      console.log("👋 Logout successful");
-    } catch (error) {
-      console.error("❌ Error logging out:", error);
-      throw error;
+      return null;
     }
   }
 }
 
-// ✅ Export instance so you don’t need to `new` it every time
-const authService = new AuthService();
-export default authService;
+// ✅ Named export
+export const authService = new AppWriteService();
