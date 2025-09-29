@@ -1,7 +1,8 @@
-import config_variable from "@/config_variable/config_variable";
+// import config_variable from "..config_variable/config_variable/config_variable";
+import config_variable from "../config_variable/config_variable";
 import { Client, Account, ID } from "appwrite";
 
-export class AuthService {
+class AppWriteService {
     client = new Client();
     account;
 
@@ -59,3 +60,7 @@ export class AuthService {
         }
     }
 }
+
+// ✅ Default export
+const appWriteService = new AppWriteService();
+export default appWriteService;
