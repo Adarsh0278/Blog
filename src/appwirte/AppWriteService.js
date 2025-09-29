@@ -87,3 +87,4 @@ export class AppWriteService {
 
 // ✅ Named export
 export const authService = new AppWriteService();
+export default authService

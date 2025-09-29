@@ -1,7 +1,7 @@
-import React,{useEffect,useState} from "react"
-import { useDispatch } from "react-redux"
-import authService from "./appwirte/AppWriteService";
-import {login , logout} from "./store/authSlice"
+import React,{useEffect,useState} from "react";
+import { useDispatch } from "react-redux";
+import { authService } from "./appwirte/AppWriteService.js";
+import {login , logout} from "./store/authSlice";
 
 
 
@@ -35,7 +35,7 @@ useEffect(() => {
   // ):null
   
   return(
-  <div>
+  <div className="bg-black bg bg">
     <h1>ok</h1>
     ok
     
